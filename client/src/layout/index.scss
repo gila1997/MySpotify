@@ -1,0 +1,17 @@
+@import "reset";
+@import "variables";
+@import "typography";
+@import "media-queries";
+@import "base";
+@import "functions";
+
+@import "../components/MusicPlayer/MusicPlayer.scss";
+@import "../components/CoverArtist/CoverArtist.scss";
+@import "../components/Playlist/Playlist.scss";
+@import "../components/UserPanel/UserPanel.scss";
+@import "../components/PlayingBar/PlayingBar.scss";
+@import "../components/Advertisement/Advertisement.scss";
+
+@import "../components/Buttons/PlayBtn.scss";
+@import "../components/Buttons/FollowBtn.scss";
+@import "../components/Buttons/LikeBtn.scss";

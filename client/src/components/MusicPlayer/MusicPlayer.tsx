@@ -1,0 +1,243 @@
+ import React from 'react';
+
+// import CoverArtist from '../CoverArtist/CoverArtist';
+// import Playlist from '../Playlist/Playlist';
+// import UserPanel from '../UserPanel/UserPanel';
+// import PlayingBar from '../PlayingBar/PlayingBar';
+// import Advertisement from '../Advertisement/Advertisement';
+
+// //import albumInfo from '../../initial-playlist';
+// import { getRandomNumber } from '../../helpers';
+
+// class MusicPlayer extends React.Component {
+//   state = {
+//     album: albumInfo,
+//     currentSong: {},
+//     currentTime: null,
+//     duration: null,
+//     isPlaying: false,
+//     repeatMode: false,
+//     shuffleMode: false,
+//   };
+
+//   audioRef = React.createRef();
+
+//   progressBarRef = React.createRef();
+
+//   playedRef = React.createRef();
+
+//   bufferRef = React.createRef();
+
+//   componentDidMount() {
+//     const audio = this.audioRef.current;
+
+//     this.init();
+//     audio.addEventListener('canplay', this.saveSongDuration);
+//     audio.addEventListener('timeupdate', this.handleTimeUpdateEvent);
+//   }
+
+//   init = () => {
+//     const { album } = this.state;
+//     this.setState({ currentSong: album.tracks[0] });
+//   };
+
+//   saveSongDuration = e => {
+//     this.setState({
+//       duration: e.target.duration,
+//     });
+//   };
+
+//   playSong = () => {
+//     const { isPlaying } = this.state;
+//     const audio = this.audioRef.current;
+
+//     this.setState({ isPlaying: !isPlaying });
+
+//     if (isPlaying) {
+//       audio.pause();
+//     } else {
+//       audio.play();
+//     }
+//   };
+
+//   playSingleSong = index => {
+//     const { album } = this.state;
+
+//     this.setState(
+//       {
+//         currentSong: album.tracks[index],
+//         isPlaying: false,
+//       },
+//       () => this.playSong()
+//     );
+//   };
+
+//   playLast = () => {
+//     const { album, currentSong } = this.state;
+//     const { tracks } = album;
+
+//     tracks.forEach((track, index) => {
+//       if (track.url === currentSong.url) {
+//         const trackIndex = index === 0 ? tracks[tracks.length - 1] : tracks[index - 1];
+
+//         this.setState(
+//           {
+//             currentSong: trackIndex,
+//             isPlaying: false,
+//           },
+//           () => {
+//             this.playSong();
+//           }
+//         );
+//       }
+//     });
+//   };
+
+//   playNext = () => {
+//     const { album, currentSong } = this.state;
+//     const { tracks } = album;
+
+//     tracks.forEach((track, index) => {
+//       if (track.url === currentSong.url) {
+//         this.setState(
+//           {
+//             currentSong: tracks[(index + 1) % tracks.length],
+//             isPlaying: false,
+//           },
+//           () => {
+//             this.playSong();
+//           }
+//         );
+//       }
+//     });
+//   };
+
+//   handleTimeUpdateEvent = e => {
+//     this.setState({
+//       currentTime: e.target.currentTime,
+//     });
+
+//     this.updateProgressBar(e);
+//     this.handleAudioEnd();
+//   };
+
+//   updateCurrentTime = e => {
+//     const audio = this.audioRef.current;
+//     const progressBar = this.progressBarRef.current;
+//     const totalWidth = progressBar.offsetWidth;
+//     const offsetLeft = progressBar.getBoundingClientRect().left;
+//     const playedRatio = (e.pageX - offsetLeft) / totalWidth;
+//     const { duration } = this.state;
+
+//     audio.currentTime = playedRatio * duration;
+//   };
+
+//   updateProgressBar = () => {
+//     const audio = this.audioRef.current;
+//     const playedBar = this.playedRef.current;
+//     const { currentTime, duration } = this.state;
+//     const playedRatio = (currentTime / duration) * 100;
+
+//     playedBar.style.transform = `translateX(${-(100 - playedRatio)}%)`;
+
+//     if (audio.buffered.length <= 0) return;
+
+//     const lastBuffered = audio.buffered.end(audio.buffered.length - 1);
+//     const bufferedRatio = (lastBuffered / duration) * 100;
+//     const bufferBar = this.bufferRef.current;
+
+//     bufferBar.style.transform = `translateX(${-(100 - bufferedRatio)}%)`;
+//   };
+
+//   handleAudioEnd = () => {
+//     const audio = this.audioRef.current;
+//     if (!audio.ended) return;
+
+//     const { album, repeatMode, shuffleMode, isPlaying } = this.state;
+
+//     if (repeatMode) {
+//       this.setState({ isPlaying: !isPlaying });
+//       audio.currentTime = 0;
+//       this.playSong();
+//     } else if (shuffleMode) {
+//       const totalTracks = album.tracks.length;
+//       const randomTrack = getRandomNumber(0, totalTracks - 1);
+
+//       this.setState({
+//         currentSong: album.tracks[randomTrack],
+//         isPlaying: !isPlaying,
+//       });
+
+//       this.playSong();
+//     } else {
+//       this.playNext();
+//     }
+//   };
+
+//   toggleRepeatMode = () => {
+//     const { repeatMode } = this.state;
+//     this.setState({ repeatMode: !repeatMode });
+//   };
+
+//   toggleShuffleMode = () => {
+//     const { shuffleMode } = this.state;
+//     this.setState({ shuffleMode: !shuffleMode });
+//   };
+
+//   toggleLikedSong = index => {
+//     const { album } = this.state;
+//     const newTracks = [...album.tracks];
+//     newTracks[index].liked = !newTracks[index].liked;
+
+//     this.setState({
+//       album: {
+//         ...album,
+//         tracks: newTracks,
+//       },
+//     });
+//   };
+
+//   render() {
+//     const { album, currentSong, isPlaying } = this.state;
+
+//     return (
+//       <div className="app">
+//         <div className="wrapper-l container">
+//           <CoverArtist
+//             artistCover={album.artistCover}
+//             artist={album.artist}
+//             followers={album.followers}
+//             isPlaying={isPlaying}
+//             playSong={this.playSong}
+//           />
+//           <Playlist
+//             album={album}
+//             isPlaying={isPlaying}
+//             currentSong={currentSong}
+//             playSong={this.playSong}
+//             playSingleSong={this.playSingleSong}
+//             toggleLikedSong={this.toggleLikedSong}
+//           />
+//           <UserPanel />
+//           <PlayingBar
+//             {...this.state}
+//             audioRef={this.audioRef}
+//             progressBarRef={this.progressBarRef}
+//             playedRef={this.playedRef}
+//             bufferRef={this.bufferRef}
+//             playSong={this.playSong}
+//             playLast={this.playLast}
+//             playNext={this.playNext}
+//             updateCurrentTime={this.updateCurrentTime}
+//             toggleRepeatMode={this.toggleRepeatMode}
+//             toggleShuffleMode={this.toggleShuffleMode}
+//             toggleLikedSong={this.toggleLikedSong}
+//           />
+//         </div>
+//         <Advertisement audioRef={this.audioRef} />
+//         </div>
+//     );
+//   }
+// }
+
+// export default MusicPlayer;
